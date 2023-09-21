@@ -1,0 +1,17 @@
+{
+  "name": "benchmem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "substrate-exec-rimraf ./lib && substrate-exec-tsc",
+    "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "yarn@3.6.3",
+  "devDependencies": {
+    "@substrate/dev": "^0.7.0"
+  }
+}
