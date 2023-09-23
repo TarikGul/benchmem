@@ -1,11 +1,13 @@
 {
-  "name": "benchmem",
+  "name": "@tarikg/benchmem",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "build": "substrate-exec-rimraf ./lib && substrate-exec-tsc",
-    "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles"
+    "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
+    "lint": "substrate-dev-run-lint",
+    "lint:fix": "substrate-dev-run-lint --fix"
   },
   "keywords": [],
   "author": "",
