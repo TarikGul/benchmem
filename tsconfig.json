@@ -4,7 +4,6 @@
       "baseUrl": ".",
       "outDir": "lib",
       "rootDirs": ["./src"],
-      "suppressImplicitAnyIndexErrors": true,
       "resolveJsonModule": true,
       "esModuleInterop": true,
     },
@@ -16,6 +15,6 @@
     ],
     "include": [
       "./src/**/*.ts",
-      "./src/**/*.json",
+      "./src/**/*.json", "example/example.ts",
     ]
   }
