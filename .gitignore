@@ -12,3 +12,6 @@
 # Tsc Build
 **/lib
 **/build
+
+# Test coverage
+/coverage
