@@ -3,9 +3,20 @@ import { GCProfiler, GCProfilerResult, getHeapStatistics, HeapInfo } from 'node:
 export interface HeapStatsResult {
 	before: HeapInfo;
 	after: HeapInfo;
+	delta: HeapDelta;
 }
 
-export interface PerfOptions {
+export interface HeapDelta {
+	totalHeapSize: number;
+	usedHeapSize: number;
+	totalPhysicalSize: number;
+	totalAvailableSize: number;
+	heapSizeLimit: number;
+	mallocedMemory: number;
+	externalMemory: number;
+}
+
+export interface MemOptions {
 	iterations?: number;
 }
 
@@ -15,9 +26,21 @@ export interface GCProfilerOptions {
 	async?: boolean;
 }
 
+const calculateHeapDelta = (before: HeapInfo, after: HeapInfo): HeapDelta => {
+	return {
+		totalHeapSize: after.total_heap_size - before.total_heap_size,
+		usedHeapSize: after.used_heap_size - before.used_heap_size,
+		totalPhysicalSize: after.total_physical_size - before.total_physical_size,
+		totalAvailableSize: after.total_available_size - before.total_available_size,
+		heapSizeLimit: after.heap_size_limit - before.heap_size_limit,
+		mallocedMemory: after.malloced_memory - before.malloced_memory,
+		externalMemory: after.external_memory - before.external_memory,
+	};
+};
+
 export const v8HeapStatsWrapper = <A extends unknown[], R>(
 	fn: (...args: A) => R,
-	options: PerfOptions = {},
+	options: MemOptions = {},
 	...args: A
 ): HeapStatsResult => {
 	const heapInfoBefore = getHeapStatistics();
@@ -30,12 +53,13 @@ export const v8HeapStatsWrapper = <A extends unknown[], R>(
 	return {
 		before: heapInfoBefore,
 		after: heapInfoAfter,
+		delta: calculateHeapDelta(heapInfoBefore, heapInfoAfter),
 	};
 };
 
 export const v8HeapStatsWrapperAsync = async <A extends unknown[], R>(
 	fn: (...args: A) => Promise<R>,
-	options: PerfOptions = {},
+	options: MemOptions = {},
 	...args: A
 ): Promise<HeapStatsResult> => {
 	const heapInfoBefore = getHeapStatistics();
@@ -48,6 +72,7 @@ export const v8HeapStatsWrapperAsync = async <A extends unknown[], R>(
 	return {
 		before: heapInfoBefore,
 		after: heapInfoAfter,
+		delta: calculateHeapDelta(heapInfoBefore, heapInfoAfter),
 	};
 };
 
