@@ -1,17 +1,33 @@
 {
   "name": "@tarikg/benchmem",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Lightweight Node.js library for benchmarking performance and memory profiling",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "substrate-exec-rimraf ./lib && substrate-exec-tsc",
     "test": "NODE_ENV=test substrate-exec-jest --detectOpenHandles",
     "lint": "substrate-dev-run-lint",
     "lint:fix": "substrate-dev-run-lint --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "benchmark",
+    "performance",
+    "memory",
+    "profiling",
+    "v8",
+    "heap",
+    "gc",
+    "garbage-collection"
+  ],
+  "author": "Tarik Gul",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "packageManager": "yarn@3.6.3",
   "devDependencies": {
     "@substrate/dev": "^0.7.0"

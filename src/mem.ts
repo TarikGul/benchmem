@@ -1,9 +1,28 @@
-import { GCProfiler, GCProfilerResult, getHeapStatistics } from 'node:v8';
+import { GCProfiler, GCProfilerResult, getHeapStatistics, HeapInfo } from 'node:v8';
 
-export const v8HeapStatsWrapper = (fn: Function, inpt: { iterations?: number }, ...args: unknown[]) => {
+export interface HeapStatsResult {
+	before: HeapInfo;
+	after: HeapInfo;
+}
+
+export interface PerfOptions {
+	iterations?: number;
+}
+
+export interface GCProfilerOptions {
+	timeout?: number;
+	iterations?: number;
+	async?: boolean;
+}
+
+export const v8HeapStatsWrapper = <A extends unknown[], R>(
+	fn: (...args: A) => R,
+	options: PerfOptions = {},
+	...args: A
+): HeapStatsResult => {
 	const heapInfoBefore = getHeapStatistics();
-	const it = inpt.iterations ? inpt.iterations : 1;
-	for (let i = 0; i < it; i++) {
+	const iterations = options.iterations ?? 1;
+	for (let i = 0; i < iterations; i++) {
 		fn(...args);
 	}
 	const heapInfoAfter = getHeapStatistics();
@@ -14,10 +33,14 @@ export const v8HeapStatsWrapper = (fn: Function, inpt: { iterations?: number }, 
 	};
 };
 
-export const v8HeapStatsWrapperAsync = async (fn: Function, inpt: { iterations?: number }, ...args: unknown[]) => {
+export const v8HeapStatsWrapperAsync = async <A extends unknown[], R>(
+	fn: (...args: A) => Promise<R>,
+	options: PerfOptions = {},
+	...args: A
+): Promise<HeapStatsResult> => {
 	const heapInfoBefore = getHeapStatistics();
-	const it = inpt.iterations ? inpt.iterations : 1;
-	for (let i = 0; i < it; i++) {
+	const iterations = options.iterations ?? 1;
+	for (let i = 0; i < iterations; i++) {
 		await fn(...args);
 	}
 	const heapInfoAfter = getHeapStatistics();
@@ -28,22 +51,31 @@ export const v8HeapStatsWrapperAsync = async (fn: Function, inpt: { iterations?:
 	};
 };
 
-export const gCProfilerWrapper = async (
-	fn: Function,
-	inpt: { timeout?: number; iterations?: number; promise?: boolean },
-	...args: unknown[]
+export const gCProfilerWrapper = async <A extends unknown[], R>(
+	fn: (...args: A) => R | Promise<R>,
+	options: GCProfilerOptions = {},
+	...args: A
 ): Promise<GCProfilerResult> => {
-	const t = inpt.timeout ? inpt.timeout : 1;
-	const it = inpt.iterations ? inpt.iterations : 1;
-	const prof = new GCProfiler();
-	return new Promise((resolve, _) => {
-		prof.start();
-		for (let i = 0; i < it; i++) {
-			fn(...args);
-		}
+	const timeout = options.timeout ?? 1;
+	const iterations = options.iterations ?? 1;
+	const isAsync = options.async ?? false;
 
+	const prof = new GCProfiler();
+	prof.start();
+
+	if (isAsync) {
+		for (let i = 0; i < iterations; i++) {
+			await fn(...args);
+		}
+	} else {
+		for (let i = 0; i < iterations; i++) {
+			void fn(...args);
+		}
+	}
+
+	return new Promise((resolve) => {
 		setTimeout(() => {
 			resolve(prof.stop());
-		}, t);
+		}, timeout);
 	});
 };

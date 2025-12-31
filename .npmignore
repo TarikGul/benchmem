@@ -1,0 +1,25 @@
+# Source files
+src/
+
+# Examples
+example/
+
+# Config files
+tsconfig.json
+jest.config.js
+.eslintrc.cjs
+.prettierrc.cjs
+
+# Yarn
+.yarn/
+.yarnrc.yml
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+.git/
+.gitignore
+*.log
